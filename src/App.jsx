@@ -9,9 +9,12 @@ import InvoiceForm from './components/Invoices/InvoiceForm';
 import InvoicePreviewModal from './components/Invoices/InvoicePreviewModal';
 import ReportsView from './components/Reports/ReportsView';
 import SettingsModal from './components/Settings/SettingsModal';
+import LoginPage from './components/Auth/LoginPage';
 import { storageService } from './services/storageService';
 
 export default function App() {
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState(() => storageService.isAuthenticated());
   const [activeTab, setActiveTab] = useState('dashboard');
 
   // Application Data States
@@ -34,7 +37,7 @@ export default function App() {
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  // Load Data on Mount
+  // Load Data on Mount if authenticated
   const loadAllData = () => {
     const cData = storageService.getClients();
     const iData = storageService.getInvoices();
@@ -43,7 +46,6 @@ export default function App() {
     setInvoices(iData);
     setSettings(sData);
 
-    // Keep selected client updated if detail modal is active
     if (selectedClient) {
       const freshClient = cData.find(c => c.id === selectedClient.id);
       if (freshClient) setSelectedClient(freshClient);
@@ -51,8 +53,25 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadAllData();
-  }, []);
+    if (isAuthenticated) {
+      loadAllData();
+    }
+  }, [isAuthenticated]);
+
+  // Auth Actions
+  const handleLogin = (email, password) => {
+    const result = storageService.login(email, password);
+    if (result.success) {
+      setIsAuthenticated(true);
+      loadAllData();
+    }
+    return result;
+  };
+
+  const handleLogout = () => {
+    storageService.logout();
+    setIsAuthenticated(false);
+  };
 
   // Handle Tab Navigation vs Settings Modal
   const handleTabChange = (tabId) => {
@@ -131,7 +150,6 @@ export default function App() {
     }
     loadAllData();
 
-    // Automatically open the print-ready A4 PDF preview modal for instant view, print, or WhatsApp sharing!
     if (savedInvoice) {
       setSelectedInvoice(savedInvoice);
       setIsInvoicePreviewOpen(true);
@@ -177,6 +195,11 @@ export default function App() {
     }
   };
 
+  // If not authenticated, render Login Page
+  if (!isAuthenticated) {
+    return <LoginPage onLoginSuccess={handleLogin} />;
+  }
+
   const nextInvoiceNumber = storageService.getNextInvoiceNumber();
   const selectedClientInvoices = selectedClient 
     ? invoices.filter(inv => inv.clientId === selectedClient.id) 
@@ -192,6 +215,7 @@ export default function App() {
         onNewInvoice={() => handleOpenNewInvoice()}
         onNewClient={handleOpenAddClient}
         onResetData={handleResetData}
+        onLogout={handleLogout}
       />
 
       {/* Main Module View Content */}

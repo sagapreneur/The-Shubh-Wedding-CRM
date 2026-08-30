@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Check, Save, RotateCcw } from 'lucide-react';
+import { storageService } from '../../services/storageService';
 
 export default function SettingsModal({ isOpen, onClose, settings, onSaveSettings, onResetDefaults }) {
   const [formData, setFormData] = useState({
@@ -12,14 +13,41 @@ export default function SettingsModal({ isOpen, onClose, settings, onSaveSetting
     defaultTerms: settings?.defaultTerms || '1. 50% advance required upon booking.\n2. Balance 50% payable on delivery.',
     defaultTaxPercent: settings?.defaultTaxPercent || 18,
     taxEnabledByDefault: Boolean(settings?.taxEnabledByDefault),
-    reminderTemplate: settings?.reminderTemplate || 'Hi {Client Name}, this is a gentle reminder that {Balance Due} is pending for Invoice #{Invoice No.} ({Service}) with The Shubh Wedding. Kindly complete the payment at your convenience. Thank you! 🙏'
+    reminderTemplate: settings?.reminderTemplate || 'Hi {Client Name}, this is a gentle reminder that {Balance Due} is pending for Invoice #{Invoice No.} ({Service}) with The Shubh Wedding. Kindly complete the payment at your convenience. Thank you! 🙏',
+    adminEmail: 'admin@theshubhwedding.com',
+    adminPassword: 'TSW@Studio2026'
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      const creds = storageService.getAuthCreds();
+      setFormData(prev => ({
+        ...prev,
+        studioName: settings?.studioName || 'The Shubh Wedding',
+        tagline: settings?.tagline || 'Luxury Wedding & Portrait Photography',
+        address: settings?.address || 'Defence Colony, New Delhi 110024',
+        phone: settings?.phone || '+91 98100 87654',
+        email: settings?.email || 'inquiries@theshubhwedding.com',
+        gstin: settings?.gstin || '',
+        defaultTerms: settings?.defaultTerms || '1. 50% advance required upon booking.\n2. Balance 50% payable on delivery.',
+        defaultTaxPercent: settings?.defaultTaxPercent || 18,
+        taxEnabledByDefault: Boolean(settings?.taxEnabledByDefault),
+        reminderTemplate: settings?.reminderTemplate || 'Hi {Client Name}, this is a gentle reminder that {Balance Due} is pending for Invoice #{Invoice No.} ({Service}) with The Shubh Wedding. Kindly complete the payment at your convenience. Thank you! 🙏',
+        adminEmail: creds?.email || 'admin@theshubhwedding.com',
+        adminPassword: creds?.password || 'TSW@Studio2026'
+      }));
+    }
+  }, [isOpen, settings]);
 
   if (!isOpen) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSaveSettings(formData);
+    if (formData.adminEmail && formData.adminPassword) {
+      storageService.saveAuthCreds(formData.adminEmail, formData.adminPassword);
+    }
+    const { adminEmail, adminPassword, ...settingsToSave } = formData;
+    onSaveSettings(settingsToSave);
     onClose();
   };
 
@@ -169,6 +197,35 @@ export default function SettingsModal({ isOpen, onClose, settings, onSaveSetting
                 onChange={(e) => setFormData({ ...formData, reminderTemplate: e.target.value })}
                 className="w-full p-3 rounded-xl border border-tsw-border text-xs focus:border-tsw-gold focus:outline-none"
               ></textarea>
+            </div>
+          </div>
+
+          {/* Admin Login Credentials */}
+          <div className="space-y-4 pt-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-tsw-gold-dark border-b border-tsw-border pb-1">
+              4. Admin Security & Login Credentials
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[11px] font-semibold text-tsw-muted mb-1">Admin Email Address</label>
+                <input
+                  type="email"
+                  value={formData.adminEmail || 'admin@theshubhwedding.com'}
+                  onChange={(e) => setFormData({ ...formData, adminEmail: e.target.value })}
+                  className="w-full px-3.5 py-2 rounded-xl border border-tsw-border text-xs font-medium focus:border-tsw-gold focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-tsw-muted mb-1">Admin Password</label>
+                <input
+                  type="text"
+                  value={formData.adminPassword || 'TSW@Studio2026'}
+                  onChange={(e) => setFormData({ ...formData, adminPassword: e.target.value })}
+                  className="w-full px-3.5 py-2 rounded-xl border border-tsw-border text-xs font-mono font-medium focus:border-tsw-gold focus:outline-none"
+                />
+              </div>
             </div>
           </div>
 

@@ -3,7 +3,14 @@ import { INVOICE_STATUSES } from '../types';
 const STORAGE_KEYS = {
   CLIENTS: 'tsw_crm_clients_v1',
   INVOICES: 'tsw_crm_invoices_v1',
-  SETTINGS: 'tsw_crm_settings_v1'
+  SETTINGS: 'tsw_crm_settings_v1',
+  AUTH_SESSION: 'tsw_crm_auth_session_v1',
+  AUTH_CREDS: 'tsw_crm_auth_creds_v1'
+};
+
+const DEFAULT_AUTH_CREDS = {
+  email: 'admin@theshubhwedding.com',
+  password: 'TSW@Studio2026'
 };
 
 const DEFAULT_SETTINGS = {
@@ -389,10 +396,61 @@ export const storageService = {
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
   },
 
+  // Auth & Admin Security
+  getAuthCreds: () => {
+    const data = localStorage.getItem(STORAGE_KEYS.AUTH_CREDS);
+    if (!data) {
+      localStorage.setItem(STORAGE_KEYS.AUTH_CREDS, JSON.stringify(DEFAULT_AUTH_CREDS));
+      return DEFAULT_AUTH_CREDS;
+    }
+    return JSON.parse(data);
+  },
+
+  saveAuthCreds: (email, password) => {
+    const creds = { email: email.trim(), password: password.trim() };
+    localStorage.setItem(STORAGE_KEYS.AUTH_CREDS, JSON.stringify(creds));
+    return creds;
+  },
+
+  isAuthenticated: () => {
+    const session = localStorage.getItem(STORAGE_KEYS.AUTH_SESSION);
+    if (!session) return false;
+    try {
+      const parsed = JSON.parse(session);
+      return Boolean(parsed && parsed.authenticated);
+    } catch (e) {
+      return false;
+    }
+  },
+
+  login: (email, password) => {
+    const creds = storageService.getAuthCreds();
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPass = (password || '').trim();
+
+    if (cleanEmail === creds.email.toLowerCase() && cleanPass === creds.password) {
+      const session = {
+        authenticated: true,
+        userEmail: creds.email,
+        loggedInAt: new Date().toISOString()
+      };
+      localStorage.setItem(STORAGE_KEYS.AUTH_SESSION, JSON.stringify(session));
+      return { success: true };
+    }
+
+    return { success: false, error: 'Invalid admin email or password. Please try again.' };
+  },
+
+  logout: () => {
+    localStorage.removeItem(STORAGE_KEYS.AUTH_SESSION);
+  },
+
   // Reset to factory seed data
   resetToDefaults: () => {
     localStorage.setItem(STORAGE_KEYS.CLIENTS, JSON.stringify(SEED_CLIENTS));
     localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(SEED_INVOICES));
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(DEFAULT_SETTINGS));
+    localStorage.setItem(STORAGE_KEYS.AUTH_CREDS, JSON.stringify(DEFAULT_AUTH_CREDS));
+    localStorage.removeItem(STORAGE_KEYS.AUTH_SESSION);
   }
 };

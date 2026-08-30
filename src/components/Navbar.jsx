@@ -7,7 +7,8 @@ import {
   Settings, 
   Plus, 
   RotateCcw,
-  UserPlus
+  UserPlus,
+  LogOut
 } from 'lucide-react';
 
 export default function Navbar({ 
@@ -15,7 +16,8 @@ export default function Navbar({
   setActiveTab, 
   onNewInvoice, 
   onNewClient, 
-  onResetData 
+  onResetData,
+  onLogout 
 }) {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -93,6 +95,14 @@ export default function Navbar({
               className="p-2 sm:p-2.5 rounded-xl border border-tsw-border text-tsw-muted hover:text-tsw-brick hover:border-tsw-brick/30 hover:bg-tsw-brick-light transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={onLogout}
+              title="Sign Out Admin"
+              className="p-2 sm:p-2.5 rounded-xl border border-tsw-border text-tsw-muted hover:text-tsw-brick hover:border-tsw-brick/30 hover:bg-tsw-brick-light transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
             </button>
 
             {/* Add Client Button: Fixed alignment & single line whitespace-nowrap */}
