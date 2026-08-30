@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Mail, Eye, EyeOff, ShieldCheck, ArrowRight, KeyRound } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, ShieldCheck, ArrowRight } from 'lucide-react';
 
 export default function LoginPage({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
@@ -8,15 +8,6 @@ export default function LoginPage({ onLoginSuccess }) {
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const DEFAULT_EMAIL = 'admin@theshubhwedding.com';
-  const DEFAULT_PASS = 'TSW@Studio2026';
-
-  const handleAutoFill = () => {
-    setEmail(DEFAULT_EMAIL);
-    setPassword(DEFAULT_PASS);
-    setError('');
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -166,29 +157,6 @@ export default function LoginPage({ onLoginSuccess }) {
             </button>
 
           </form>
-
-          {/* Quick Demo Fill Helper Box */}
-          <div className="pt-3 border-t border-tsw-border">
-            <div className="bg-tsw-bg p-3.5 rounded-xl border border-tsw-border space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-tsw-gold-dark uppercase tracking-wider flex items-center gap-1">
-                  <KeyRound className="w-3.5 h-3.5" />
-                  Default Admin Credentials:
-                </span>
-                <button
-                  type="button"
-                  onClick={handleAutoFill}
-                  className="text-[11px] font-bold text-tsw-gold hover:text-tsw-gold-dark underline"
-                >
-                  Click to Auto-Fill
-                </button>
-              </div>
-              <div className="text-[11px] font-mono text-tsw-ink space-y-0.5 bg-white p-2 rounded-lg border border-tsw-border">
-                <p><span className="text-tsw-muted">Email:</span> {DEFAULT_EMAIL}</p>
-                <p><span className="text-tsw-muted">Password:</span> {DEFAULT_PASS}</p>
-              </div>
-            </div>
-          </div>
 
         </div>
 
