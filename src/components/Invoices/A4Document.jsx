@@ -2,8 +2,8 @@ import React from 'react';
 import { formatCurrency, formatDate } from '../../utils/format';
 
 /**
- * Print-ready A4 Document Component for Invoices & Receipts
- * Styled precisely like a luxury wedding studio letterhead on standard A4 page (210mm x 297mm)
+ * Print-ready & Mobile-Responsive A4 Document Component for Invoices & Receipts
+ * Beautiful & readable on all mobile viewports while preserving standard A4 paper dimensions for print & PDF generation.
  */
 export default function A4Document({ 
   invoice, 
@@ -26,20 +26,19 @@ export default function A4Document({
     <div 
       ref={documentRef}
       id="a4-print-container"
-      className="a4-document-page bg-white text-tsw-ink font-sans p-8 sm:p-10 w-[210mm] min-h-[297mm] mx-auto flex flex-col justify-between shadow-tsw-modal border border-tsw-border print:border-none print:shadow-none print:p-0 print:m-0 shrink-0 box-border"
-      style={{ width: '210mm', minHeight: '297mm' }}
+      className="a4-document-page bg-white text-tsw-ink font-sans p-4 sm:p-10 w-full max-w-[210mm] min-h-0 sm:min-h-[297mm] mx-auto flex flex-col justify-between shadow-tsw-modal rounded-xl sm:rounded-2xl border border-tsw-border print:border-none print:shadow-none print:p-0 print:m-0 print:w-full"
     >
-      <div className="space-y-6 sm:space-y-8">
+      <div className="space-y-5 sm:space-y-8">
         
         {/* 1. Studio Letterhead Header */}
-        <div className="flex items-start justify-between border-b border-tsw-border pb-6 sm:pb-8">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-4 border-b border-tsw-border pb-5 sm:pb-8">
           
           {/* Logo & Studio Info */}
-          <div className="space-y-2.5 max-w-xs sm:max-w-sm">
+          <div className="space-y-2 max-w-full sm:max-w-sm">
             <img 
               src={logoUrl} 
               alt={studioName} 
-              className="h-14 sm:h-16 w-auto object-contain"
+              className="h-12 sm:h-16 w-auto object-contain"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = '/public/Logo-01.png';
@@ -54,11 +53,11 @@ export default function A4Document({
           </div>
 
           {/* Document Title & Meta Header */}
-          <div className="text-right space-y-2">
+          <div className="w-full sm:w-auto text-left sm:text-right space-y-1.5 sm:space-y-2">
             <span className="inline-block text-2xl sm:text-3xl font-serif font-bold tracking-widest text-tsw-ink uppercase">
               {docTitle}
             </span>
-            <div className="text-xs text-tsw-ink space-y-1 bg-tsw-bg p-3 rounded-xl border border-tsw-border text-right">
+            <div className="text-[11px] sm:text-xs text-tsw-ink space-y-1 bg-tsw-bg p-3 rounded-xl border border-tsw-border text-left sm:text-right">
               <p><span className="text-tsw-muted">Document #:</span> <strong className="font-mono text-tsw-gold font-bold">{invoice.invoiceNumber}</strong></p>
               <p><span className="text-tsw-muted">Date:</span> {formatDate(invoice.invoiceDate)}</p>
               <p><span className="text-tsw-muted">Due Date:</span> {formatDate(invoice.dueDate)}</p>
@@ -71,7 +70,7 @@ export default function A4Document({
         </div>
 
         {/* 2. Client Billing Details Grid */}
-        <div className="grid grid-cols-2 gap-6 bg-tsw-bg p-4 sm:p-5 rounded-2xl border border-tsw-border">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 bg-tsw-bg p-4 sm:p-5 rounded-2xl border border-tsw-border">
           <div>
             <span className="text-[10px] font-bold uppercase tracking-widest text-tsw-gold-dark block mb-1">
               Billed To:
@@ -80,7 +79,7 @@ export default function A4Document({
             <p className="text-xs text-tsw-muted mt-1 leading-relaxed">{invoice.clientAddress}</p>
           </div>
 
-          <div className="text-right space-y-1 text-xs">
+          <div className="text-left sm:text-right space-y-1 text-xs pt-2 sm:pt-0 border-t sm:border-t-0 border-tsw-border">
             <span className="text-[10px] font-bold uppercase tracking-widest text-tsw-gold-dark block mb-1">
               Booking Info:
             </span>
@@ -91,15 +90,15 @@ export default function A4Document({
         </div>
 
         {/* 3. Line Items Table */}
-        <div className="overflow-hidden border border-tsw-border rounded-2xl">
-          <table className="w-full text-left text-xs">
+        <div className="overflow-x-auto border border-tsw-border rounded-2xl">
+          <table className="w-full text-left text-xs min-w-[480px] sm:min-w-0">
             <thead className="bg-tsw-bg text-tsw-ink uppercase text-[10px] font-bold tracking-wider border-b border-tsw-border">
               <tr>
                 <th className="py-3 px-3.5 w-10 text-center">#</th>
                 <th className="py-3 px-3.5">Service Description</th>
                 <th className="py-3 px-3.5 text-center w-16">Qty</th>
-                <th className="py-3 px-3.5 text-right w-28">Rate (₹)</th>
-                <th className="py-3 px-3.5 text-right w-32">Amount (₹)</th>
+                <th className="py-3 px-3.5 text-right w-24 sm:w-28">Rate (₹)</th>
+                <th className="py-3 px-3.5 text-right w-28 sm:w-32">Amount (₹)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-tsw-border bg-white">
@@ -121,10 +120,10 @@ export default function A4Document({
         </div>
 
         {/* 4. Financial Totals & Payment Summary Breakdown */}
-        <div className="grid grid-cols-2 gap-6 pt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-1">
           
           {/* Left: Terms & Payment Remarks */}
-          <div className="space-y-3">
+          <div className="space-y-3 order-2 sm:order-1">
             {invoice.notes && (
               <div className="text-xs space-y-1">
                 <span className="font-bold text-tsw-ink uppercase text-[10px] tracking-wider block">
@@ -145,7 +144,7 @@ export default function A4Document({
           </div>
 
           {/* Right: Subtotal, Tax, Totals */}
-          <div className="space-y-1.5 text-xs bg-tsw-bg p-4 rounded-2xl border border-tsw-border">
+          <div className="space-y-1.5 text-xs bg-tsw-bg p-4 rounded-2xl border border-tsw-border order-1 sm:order-2">
             <div className="flex justify-between py-1 border-b border-tsw-border text-tsw-muted">
               <span>Subtotal:</span>
               <span className="font-mono font-semibold text-tsw-ink">{formatCurrency(invoice.subtotal)}</span>
@@ -186,12 +185,12 @@ export default function A4Document({
       </div>
 
       {/* 5. Studio Footer Letterhead */}
-      <div className="mt-8 pt-4 border-t border-tsw-border flex items-center justify-between text-[11px] text-tsw-muted">
-        <div>
+      <div className="mt-6 sm:mt-8 pt-4 border-t border-tsw-border flex flex-col sm:flex-row items-center justify-between text-[11px] text-tsw-muted gap-2">
+        <div className="text-center sm:text-left">
           <p className="font-serif font-bold text-tsw-ink">Thank you for choosing The Shubh Wedding!</p>
           <p className="text-[10px] text-tsw-gold font-semibold uppercase tracking-widest mt-0.5">Luxury Wedding & Portrait Studio</p>
         </div>
-        <div className="text-right italic text-[10px]">
+        <div className="text-center sm:text-right italic text-[10px]">
           Computer-generated {docTitle.toLowerCase()} • Authorized Studio Letterhead
         </div>
       </div>
